@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: backend
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      - PGURI=postgres://postgres:secret@database/postgres
+    ports:
+      - "3001:3000"
+  database:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=secret
+    healthcheck:
+      interval: 1s
+      test: "pg_isready -U postgres"
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
